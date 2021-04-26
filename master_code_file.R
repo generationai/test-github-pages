@@ -1,3 +1,6 @@
+#Link to file
+#https://raw.githubusercontent.com/generationai/test-github-pages/master/master_code_file.R
+
 #_____________________________________________________________________#
 #Beginning of code chunk #1
 
@@ -44,15 +47,17 @@ leaflet(counties_coord) %>%
 
 recent_covid_counties <- read.csv('https://raw.githubusercontent.com/generationai/test-github-pages/master/covid_county.csv')
 
+qpal <- colorQuantile("YlOrRd", recent_covid_counties$cases)
+
 leaflet(counties_coord) %>% 
   addTiles() %>%
   setView(-98.5795, 39.828175, zoom = 4) %>%
   addPolygons(
     color = "#444444",
-    fillColor = ~colorQuantile("YlOrRd", recent_covid_counties$cases)
-    (recent_covid_counties$cases), 
+    fillColor = ~qpal(recent_covid_counties$cases), 
     weight = 0.3
-  )
+  ) %>%
+  addLegend(pal = qpal, values = ~recent_covid_counties$cases, position = "bottomright", opacity = 1, title = 'Rates of COVID-19 Cases')
 
 #End of code chunk #4
 #_____________________________________________________________________#
@@ -72,6 +77,8 @@ shinyApp(ui = ui, server = server)
 #_____________________________________________________________________#
 #Beginning of code chunk #6
 
+qpal <- colorQuantile("YlOrRd", recent_covid_counties$cases)
+
 ui <- fluidPage(
   h2("This is an app!"),
   leafletOutput("mymap")
@@ -83,9 +90,10 @@ server <- function(input, output){
       setView(-98.5795, 39.828175, zoom = 4) %>%
       addPolygons(
         color = "#444444",
-        fillColor = ~colorQuantile("YlOrRd", recent_covid_counties$cases)(recent_covid_counties$cases), 
+        fillColor = ~qpal(recent_covid_counties$cases), 
         weight = 0.3
-      )
+      ) %>%
+      addLegend(pal = qpal, values = ~recent_covid_counties$cases, position = "bottomright", opacity = 1, title = 'Rates of COVID-19 Cases')
   })
 }
 shinyApp(ui = ui, server = server)
@@ -136,13 +144,15 @@ ui <- fluidPage(
 
 server <- function(input, output){
   output$mymap <- renderLeaflet({
-    leaflet(counties_coord) %>%
+    leaflet(counties_coord) %>% 
       addTiles() %>%
       setView(-98.5795, 39.828175, zoom = 4) %>%
       addPolygons(
         color = "#444444",
-        fillColor = ~colorQuantile("YlOrRd", recent_covid_counties$cases)(recent_covid_counties$cases),
-        weight = 1)
+        fillColor = ~qpal(recent_covid_counties$cases), 
+        weight = 0.3
+      ) %>%
+      addLegend(pal = qpal, values = ~recent_covid_counties$cases, position = "bottomright", opacity = 1, title = 'Rates of COVID-19 Cases')
   })
   
   output$barplot <- renderPlotly({
@@ -167,7 +177,7 @@ ui <- fluidPage(
   h2("This is my map"),
   selectInput("state_selected", 
               "pick a state",
-              choice = choice = str_to_title(unique(new_cases$state)),
+              choice = str_to_title(unique(new_cases$state)),
               selected = 'alabama'),
   plotlyOutput("barplot"),
   leafletOutput("mymap")
@@ -175,13 +185,15 @@ ui <- fluidPage(
 
 server <- function(input, output){
   output$mymap <- renderLeaflet({
-    leaflet(counties_coord) %>%
+    leaflet(counties_coord) %>% 
       addTiles() %>%
       setView(-98.5795, 39.828175, zoom = 4) %>%
       addPolygons(
         color = "#444444",
-        fillColor = ~colorQuantile("YlOrRd", recent_covid_counties$cases)(recent_covid_counties$cases),
-        weight = 1)
+        fillColor = ~qpal(recent_covid_counties$cases), 
+        weight = 0.3
+      ) %>%
+      addLegend(pal = qpal, values = ~recent_covid_counties$cases, position = "bottomright", opacity = 1, title = 'Rates of COVID-19 Cases')
   })
   
   output$barplot <- renderPlotly({
