@@ -167,7 +167,7 @@ ui <- fluidPage(
   h2("This is my map"),
   selectInput("state_selected", 
               "pick a state",
-              choice = unique(new_cases$state),
+              choice = choice = str_to_title(unique(new_cases$state)),
               selected = 'alabama'),
   plotlyOutput("barplot"),
   leafletOutput("mymap")
