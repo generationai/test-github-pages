@@ -14,8 +14,9 @@ library(shinyWidgets)
 library(hrbrthemes)
 library(plotly)
 
-leaflet() %>%
-  addTiles()
+#Make an interactive US map
+leaflet() %>% #call the leaflet package function "leaflet" 
+  addTiles() #add tiles of every country/geographic feature
 
 #End of code chunk #1
 #_____________________________________________________________________#
@@ -24,10 +25,10 @@ leaflet() %>%
 counties_coord <- geojson_read("https://raw.githubusercontent.com/generationai/test-github-pages/master/gz_2010_us_050_00_500k.json", what = "sp")
 
 #Create a US map visualization, using the county outlines 
-leaflet(counties_coord) %>% 
+leaflet(data = counties_coord) %>% #input our GeoJSON to the leaflet met
   addTiles() %>%
-  setView(-98.5795, 39.828175, zoom = 4) %>%
-  addPolygons()
+  setView(-98.5795, 39.828175, zoom = 4) %>% #set our view to the center of the United States
+  addPolygons() #Add shapes based on the GeoJSON file
 
 #End of code chunk #2
 #_____________________________________________________________________#
@@ -37,7 +38,7 @@ leaflet(counties_coord) %>%
   addTiles() %>%
   setView(-98.5795, 39.828175, zoom = 4) %>%
   addPolygons(
-    color = "#444444", #There are different color codes that can be found online
+    color = "#444444", #There are different color codes that can be found online - try changing this to "gold"
     weight = 0.3) #change this value to see how the thickness of the 
 #county border changes
 
@@ -47,27 +48,27 @@ leaflet(counties_coord) %>%
 
 recent_covid_counties <- read.csv('https://raw.githubusercontent.com/generationai/test-github-pages/master/covid_county.csv')
 
-qpal <- colorQuantile("YlOrRd", recent_covid_counties$cases)
+qpal <- colorQuantile("YlOrRd", recent_covid_counties$cases) #create a color palette
 
 leaflet(counties_coord) %>% 
   addTiles() %>%
   setView(-98.5795, 39.828175, zoom = 4) %>%
   addPolygons(
     color = "#444444",
-    fillColor = ~qpal(recent_covid_counties$cases), 
+    fillColor = ~qpal(recent_covid_counties$cases), #fill our polygons with different colors based on the color palette
     weight = 0.3
   ) %>%
-  addLegend(pal = qpal, values = ~recent_covid_counties$cases, position = "bottomright", opacity = 1, title = 'Rates of COVID-19 Cases')
+  addLegend(pal = qpal, values = ~recent_covid_counties$cases, position = "bottomright", opacity = .3, title = 'Number of COVID-19 Cases') #create a legend using our color palette
 
 #End of code chunk #4
 #_____________________________________________________________________#
 #Beginning of code chunk #5
 
 ui <- fluidPage(
-  h2("This is an app!")
+  h1("This is an app!") #HTML header text 
 )
 
-server <- function(input, output){
+server <- function(input, output){ #no interactivity or visualizations because this is empty
   
 }
 
@@ -81,10 +82,10 @@ qpal <- colorQuantile("YlOrRd", recent_covid_counties$cases)
 
 ui <- fluidPage(
   h2("This is an app!"),
-  leafletOutput("mymap")
+  leafletOutput("mymap") #tells the UI function to display the heatmap
 )
 server <- function(input, output){
-  output$mymap <- renderLeaflet({
+  output$mymap <- renderLeaflet({ #we add this to render the leaflet heatmap
     leaflet(counties_coord) %>% 
       addTiles() %>%
       setView(-98.5795, 39.828175, zoom = 4) %>%
@@ -112,7 +113,7 @@ new_cases <- read.csv("https://raw.githubusercontent.com/generationai/test-githu
 new_cases <- read.csv("https://raw.githubusercontent.com/generationai/test-github-pages/master/new_cases.csv") %>%
   mutate(date = as.Date(date))
 
-#try changing the state name to see a new graph
+#try changing the state name (make sure it's lowercase) to see a new graph
 ggplotly(new_cases[new_cases$state == 'alabama',] %>% 
            ggplot( aes(x=date, y=new_cases)) +
            geom_area(fill="#69b3a2", alpha=0.5) +
@@ -130,10 +131,10 @@ new_cases <- read.csv("https://raw.githubusercontent.com/generationai/test-githu
 
 ui <- fluidPage(
   h2("This is my map"),
-  selectInput("state_selected", 
+  selectInput("state_selected", #create an input selector widget 
               "pick a state",
               choice = unique(new_cases$state),
-              selected = 'alabama'),
+              selected = 'alabama'), #by default show the graph for the State of Alabama
   plotlyOutput("barplot"),
   leafletOutput("mymap")
 )
@@ -176,8 +177,8 @@ new_cases <- read.csv("https://raw.githubusercontent.com/generationai/test-githu
 ui <- fluidPage(
   h2("This is my map"),
   selectInput("state_selected", 
-              "pick a state",
-              choice = str_to_title(unique(new_cases$state)),
+              "Pick a State:",
+              choice = unique(new_cases$state),
               selected = 'alabama'),
   plotlyOutput("barplot"),
   leafletOutput("mymap")
@@ -211,7 +212,6 @@ shinyApp(ui=ui, server = server)
 
 #End of code chunk #11
 #_____________________________________________________________________#
-
 
 
 
